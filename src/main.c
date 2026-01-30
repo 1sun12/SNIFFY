@@ -3,17 +3,17 @@
 GENERAL HEADERS
 ──────────────────────────────────────────────────
 */
-#include <stdlib.h>         //  | Standard macros + malloc
-#include <stdio.h>          //  | Standard input & output
+#include <stdlib.h>         /*  | Standard macros + malloc */
+#include <stdio.h>          /*  | Standard input & output */
 
 /*
 ──────────────────────────────────────────────────
 NETWORK HEADERS
 ──────────────────────────────────────────────────
 */
-#include <sys/types.h>      //  | ?
-#include <sys/socket.h>     //  | ?
-#include <netdb.h>          //  | Struct addrinfo
+#include <sys/types.h>      /*  | ? */
+#include <sys/socket.h>     /*  | ? */
+#include <netdb.h>          /*  | Struct addrinfo */
 
 /*
 ──────────────────────────────────────────────────
