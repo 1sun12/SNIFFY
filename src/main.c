@@ -19,5 +19,8 @@ int main(int argc, char **argv) {
 
     // ~ Testing: open socket
     open_socket(sockpg);
+
+    // ~ Testing: close socket
+    close_socket(sockpg);
 }
 

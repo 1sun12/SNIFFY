@@ -76,7 +76,7 @@ void open_socket(nou_socket *self) {
     OUTPUT_D_MSG("open_socket : Opening a new socket...");
 
     // ~ Creates a new socket given the templated information from our address information
-    if (self->sockfd = socket(self->hints.ai_family, self->hints.ai_socktype, self->hints.ai_protocol) < 0) {
+    if ((self->sockfd = socket(self->hints.ai_family, self->hints.ai_socktype, self->hints.ai_protocol)) < 0) {
         perror("\n[ERROR]:open_socket");
         return;
     }
@@ -85,5 +85,12 @@ void open_socket(nou_socket *self) {
 }
 
 void close_socket(nou_socket *self) {
-    if (OUTPUT_DEBUG) {}
+    OUTPUT_D_MSG("close_socket : Closing an existing socket...");
+
+    if (close(self->sockfd) < 0) {
+        perror("\n[ERROR]:close_socket");
+        return;
+    }
+
+    OUTPUT_D_MSG("close_socket : Successfully closed an existing socket!");
 }
