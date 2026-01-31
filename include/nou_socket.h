@@ -70,7 +70,7 @@ void nou_socket_destroy(nou_socket **self);
  */
  
 /**
- * @details Inside of addrinfo:
+ * @brief Inside of addrinfo:
  * - int ai_flags               |   Behavior modifier for getaddrinfo()     |   AI_PASSIVE, AI_CANONNAME
  * - int ai_family              |   Address / Protocol family               |   AF_UNSPEC, AF_INET, AF_INET6
  * - int ai_socktype            |   Socket type (transport layer behavior)  |   SOCK_STREAM, SOCK_DGRAM, SOCK_RAW
@@ -83,5 +83,22 @@ void nou_socket_destroy(nou_socket **self);
  * @param self `This` object
  */
 void fill_out_hints(nou_socket *self);
+
+/**
+ * @brief Opens the socket and assigns a file descriptor
+ */
+void open_socket(nou_socket *self);
+
+/**
+ * @brief Closes the socket and removes file descriptor
+ */
+void close_socket(nou_socket * self);
+
+
+void bind_socket();
+void connect_socket();
+void send_socket();
+void recv_socket();
+void toString();
 
 #endif

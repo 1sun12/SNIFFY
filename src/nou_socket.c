@@ -7,7 +7,7 @@
  */
 
 nou_socket *nou_socket_create() {
-    if (OUTPUT_DEBUG) {printf("\n[INFO]:nou_socket_create : Initializing a nou socket...\n");}
+    OUTPUT_D_MSG("nou_socket_create : Initializing a nou socket...");
 
     // ~ Initialize a nou socket pointer
     nou_socket *new = NULL;
@@ -27,14 +27,14 @@ nou_socket *nou_socket_create() {
     // ~ Hints has already been zeroed out by calloc
 
     // ~ Return the newly init struct
-    if (OUTPUT_DEBUG) {printf("\n[INFO]:nou_socket_create : Nou socket initialized successfully!\n");}
+    OUTPUT_D_MSG("nou_socket_create : Nou socket initialized successfully!");
     return new;
 }
 
 void nou_socket_destroy(nou_socket **self_ptr) {
     nou_socket *self = *self_ptr;
 
-    if (OUTPUT_DEBUG) {printf("\n[INFO]:nou_socket_destroy : Nou socket being destroyed...\n");}
+    OUTPUT_D_MSG("nou_socket_destroy : Nou socket being destroyed...");
     
     // ~ Close the linux file descriptor for the socket
     if (close(self->sockfd) < 0) {
@@ -47,7 +47,7 @@ void nou_socket_destroy(nou_socket **self_ptr) {
     // ~ Set the pass-by-reference to NULL, free does not do this for you
     *self_ptr = NULL;
 
-    if (OUTPUT_DEBUG) {printf("\n[INFO]:nou_socket_destroy : Nou socket destroyed successfully!\n");}
+    OUTPUT_D_MSG("nou_socket_destroy : Nou socket destroyed successfully!");
 }
 
 /*
@@ -69,5 +69,21 @@ void fill_out_hints(nou_socket *self) {
     // ~ Set protocol to capture every packet that hits our Network Interface Card
     self->hints.ai_protocol = htons(ETH_P_ALL);
 
-    if (OUTPUT_DEBUG) {printf("\n[INFO]:fill_out_hints : Hints have been templated...\n");}
+    OUTPUT_D_MSG("fill_out_hints : Hints have been templated...");
+}
+
+void open_socket(nou_socket *self) {
+    OUTPUT_D_MSG("open_socket : Opening a new socket...");
+
+    // ~ Creates a new socket given the templated information from our address information
+    if (self->sockfd = socket(self->hints.ai_family, self->hints.ai_socktype, self->hints.ai_protocol) < 0) {
+        perror("\n[ERROR]:open_socket");
+        return;
+    }
+
+    OUTPUT_D_MSG("open_socket : Successfully opened a new socket!");
+}
+
+void close_socket(nou_socket *self) {
+    if (OUTPUT_DEBUG) {}
 }
