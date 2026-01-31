@@ -6,7 +6,13 @@
 #define NOU_SOCKET_H
 
 /**
- * @note General headers:
+ * @brief User headers:
+ * - debug.h    |   helpful debugging macros
+ */
+#include "debug.h"
+
+/**
+ * @brief General headers:
  * - stdio.h    |   Standard I/O (printf, fprintf, FILE operations)
  * - stdlib.h   |   General utilities (malloc, free, exit, atoi)
  * - string.h   |   String operations (memset, memcpy, strcmp, strlen)
@@ -18,24 +24,16 @@
 #include <unistd.h>
 
 /**
- * @details Network headers:
- * - sys/socket.h   |   Core socket API (socket, bind, listen, accept, send, recv)
- * - sys/types.h    |   System call data types (size_t, ssize_t, pid_t)
- * - netdb.h        |   Network database operations (getaddrinfo, getnameinfo, struct addrinfo)
+ * @brief Network headers:
+ * - sys/socket.h           |   Core socket API (socket, bind, listen, accept, send, recv)
+ * - sys/types.h            |   System call data types (size_t, ssize_t, pid_t)
+ * - netdb.h                |   Network database operations (getaddrinfo, getnameinfo, struct addrinfo)
+ * - netinet/if_ether.h     |   Ethernet header (ETH_P_ALL)
  */
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netdb.h>
-
-/**
- * @brief Elite-C-Macro to output error message and then close the program
- */
-#define exit_with_error(msg) do {perror(msg); return(EXIT_FAILURE);} while
-
-/**
- * @brief If 1, output additional debug messages (change to 0, remove extra messages)
- */
-#define OUTPUT_DEBUG 1
+#include <netinet/if_ether.h>
 
 /**
  * @brief Represents a socket & the address information used to template it + other goodies
@@ -62,7 +60,7 @@ nou_socket *nou_socket_create();
  * @brief Destroys and frees a nou socket (destructor)
  * @param self `This` object
  */
-void nou_socket_destroy(nou_socket *self); 
+void nou_socket_destroy(nou_socket **self); 
 
 /**
  * ==========================================================================
