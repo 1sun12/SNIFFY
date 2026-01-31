@@ -1,27 +1,20 @@
 /*
-──────────────────────────────────────────────────
-GENERAL HEADERS
-──────────────────────────────────────────────────
+==================================================
+HEADERS
+==================================================
 */
-#include <stdlib.h>         /*  | Standard macros + malloc */
-#include <stdio.h>          /*  | Standard input & output */
+#include "nou_socket.h"
 
 /*
-──────────────────────────────────────────────────
-NETWORK HEADERS
-──────────────────────────────────────────────────
-*/
-#include <sys/types.h>      /*  | ? */
-#include <sys/socket.h>     /*  | ? */
-#include <netdb.h>          /*  | Struct addrinfo */
-
-/*
-──────────────────────────────────────────────────
+==================================================
 MAIN
-──────────────────────────────────────────────────
+==================================================
 */
-int main(int argc, char *argv) {
+int main(int argc, char **argv) {
+    // ~ Testing: create a nou socket
+    nou_socket *sockpg = nou_socket_create();
 
-    struct addrinfo hints;
+    // ~ Testing: destroy a nou socket
+    nou_socket_destroy(sockpg);
 }
 

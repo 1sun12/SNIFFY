@@ -10,10 +10,12 @@
  * - stdio.h    |   Standard I/O (printf, fprintf, FILE operations)
  * - stdlib.h   |   General utilities (malloc, free, exit, atoi)
  * - string.h   |   String operations (memset, memcpy, strcmp, strlen)
+ * - unistd.h   |   Unix standard (close, read, write, fork, getpid)
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /**
  * @details Network headers:
@@ -24,6 +26,16 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netdb.h>
+
+/**
+ * @brief Elite-C-Macro to output error message and then close the program
+ */
+#define exit_with_error(msg) do {perror(msg); return(EXIT_FAILURE);} while
+
+/**
+ * @brief If 1, output additional debug messages (change to 0, remove extra messages)
+ */
+#define OUTPUT_DEBUG 1
 
 /**
  * @brief Represents a socket & the address information used to template it + other goodies
@@ -60,7 +72,6 @@ void nou_socket_destroy(nou_socket *self);
  */
  
 /**
- * 
  * @details Inside of addrinfo:
  * - int ai_flags               |   Behavior modifier for getaddrinfo()     |   AI_PASSIVE, AI_CANONNAME
  * - int ai_family              |   Address / Protocol family               |   AF_UNSPEC, AF_INET, AF_INET6
@@ -70,9 +81,9 @@ void nou_socket_destroy(nou_socket *self);
  * - struct sockaddr *ai_addr   |   Pointer to the actual socket address    |   Contains the IP and Port (filled in by getaddrinfo)
  * - char *ai_canonname         |   Canonical hostname                      |   ai_flags = AI_CANONNAME, then this points to a string containing official name of host
  * - strut addrinfo *ai_next    |   Linked list pointer                     |   Points to the next address from the linked-list returned by getaddrinfo()
+ * 
+ * @param self `This` object
  */
-void fill_out_hints(nou_socket *self) {
-
-}
+void fill_out_hints(nou_socket *self);
 
 #endif
