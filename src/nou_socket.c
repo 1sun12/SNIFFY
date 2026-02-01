@@ -46,10 +46,12 @@ void nou_socket_destroy(nou_socket **self_ptr) {
         perror("\n[ERROR]:nou_socket_destroy");
     }
 
+    // ~ Deallocate the buffer
+    free(self->buffer);
+    self->buffer = NULL;
+
     // ~ Deallocate this entire memory block
     free(self);
-
-    // ~ Set the pass-by-reference to NULL, free does not do this for you
     *self_ptr = NULL;
 
     OUTPUT_D_MSG("nou_socket_destroy : Nou socket destroyed successfully!");
