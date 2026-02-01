@@ -5,6 +5,7 @@ HEADERS
 */
 #include "debug.h"
 #include "nou_socket.h"
+#include "parse_ether.h"
 
 /*
 ==================================================
@@ -25,5 +26,10 @@ int main(int argc, char **argv) {
 
     // ~ Testing: recieve a frame
     recv_socket(sockpg);
-}
 
+    // ~ Testing: create ethernet parser
+    parse_ether *peth = parse_ether_create();
+
+    // ~ Testing: cast buffer to ethernet header
+    set_buffer(peth, sockpg->buffer);
+}
