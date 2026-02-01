@@ -80,6 +80,7 @@ void fill_out_hints(nou_socket *self) {
 }
 
 void open_socket(nou_socket *self) {
+    does_exist(self);
     OUTPUT_D_MSG("open_socket : Opening a new socket...");
 
     // ~ Creates a new socket given the templated information from our address information
@@ -92,6 +93,7 @@ void open_socket(nou_socket *self) {
 }
 
 void close_socket(nou_socket *self) {
+    does_exist(self);
     OUTPUT_D_MSG("close_socket : Closing an existing socket...");
 
     if (close(self->sockfd) < 0) {
@@ -103,6 +105,7 @@ void close_socket(nou_socket *self) {
 }
 
 void recv_socket(nou_socket *self) {
+    does_exist(self);
     OUTPUT_D_MSG("recv_socket : Attempting to recieve message...");
 
     // ~ Recieve a raw ethernet frame from your Network Interface Card
