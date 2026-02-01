@@ -3,6 +3,7 @@
 HEADERS
 ==================================================
 */
+#include "debug.h"
 #include "nou_socket.h"
 
 /*
@@ -11,6 +12,8 @@ MAIN
 ==================================================
 */
 int main(int argc, char **argv) {
+    OUTPUT_D_MSG("~ MAIN EXECUTION STARTING ~");
+
     // ~ Testing: create a nou socket
     nou_socket *sockpg = nou_socket_create();
 
@@ -20,7 +23,7 @@ int main(int argc, char **argv) {
     // ~ Testing: open socket
     open_socket(sockpg);
 
-    // ~ Testing: close socket
-    close_socket(sockpg);
+    // ~ Testing: recieve a frame
+    recv_socket(sockpg);
 }
 

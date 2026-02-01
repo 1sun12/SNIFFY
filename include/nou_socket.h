@@ -36,11 +36,18 @@
 #include <netinet/if_ether.h>
 
 /**
+ * @brief Nou socket constants
+ * - MAX_FRAME_SIZE     |   Represents the max byte size of an incoming packet from `recv_socket()`
+ */
+#define MAX_FRAME_SIZE 65535
+
+/**
  * @brief Represents a socket & the address information used to template it + other goodies
  */
 typedef struct {
     int sockfd;
     struct addrinfo hints;
+    void *buffer;
 } nou_socket;
 
 /** 
@@ -86,13 +93,20 @@ void fill_out_hints(nou_socket *self);
 
 /**
  * @brief Opens the socket and assigns a file descriptor
+ * @param self `This` object
  */
 void open_socket(nou_socket *self);
 
 /**
  * @brief Closes the socket and removes file descriptor
+ * @param self `This` object
  */
 void close_socket(nou_socket * self);
+
+/**
+ * @brief Recieves a message representing a raw ethernet header
+ */
+void recv_socket(nou_socket * self);
 
 
 void bind_socket();

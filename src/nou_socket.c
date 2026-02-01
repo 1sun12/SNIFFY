@@ -12,12 +12,12 @@ nou_socket *nou_socket_create() {
     // ~ Initialize a nou socket pointer
     nou_socket *new = NULL;
 
-    // ~ Allocate however many bytes of memory it needs
+    // ~ Allocate however many bytes of memory it needs and zero the entire space
     new = (nou_socket *)calloc(1, sizeof(nou_socket));
 
     // ~ Error check: did calloc fail?
     if (new == NULL) {
-        perror("[ERROR]:nou_socket_create");
+        perror("\n[ERROR]:nou_socket_create");
         return NULL;
     }
 
@@ -25,6 +25,11 @@ nou_socket *nou_socket_create() {
     new->sockfd = -1;
 
     // ~ Hints has already been zeroed out by calloc
+
+    // ~ Allocate memory to the buffer and error check
+    if ((new->buffer = malloc(MAX_FRAME_SIZE)) == NULL) {
+        perror("\n[ERROR]:nou_socket_create");
+    }
 
     // ~ Return the newly init struct
     OUTPUT_D_MSG("nou_socket_create : Nou socket initialized successfully!");
@@ -93,4 +98,16 @@ void close_socket(nou_socket *self) {
     }
 
     OUTPUT_D_MSG("close_socket : Successfully closed an existing socket!");
+}
+
+void recv_socket(nou_socket *self) {
+    OUTPUT_D_MSG("recv_socket : Attempting to recieve message...");
+
+    // ~ Recieve a raw ethernet frame from your Network Interface Card
+    if ((recv(self->sockfd, self->buffer, MAX_FRAME_SIZE, 0)) < 0) {
+        perror("\n[ERROR]:recv_socket");
+        return;
+    }
+
+    OUTPUT_D_MSG("recv_socket : Successfully recieved an ethernet frame!");
 }
