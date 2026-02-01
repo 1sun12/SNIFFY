@@ -1,0 +1,44 @@
+#ifndef PARSE_IP_H
+#define PARSE_IP_H
+
+/**
+ * @brief User headers
+ */
+#include "debug.h"
+
+/**
+ * @brief General headers
+ */
+#include <stdlib.h>
+#include <stdio.h>
+
+/**
+ * @brief Network headers
+ * - netinet/ip.h   |   Contains structure for IP headers (struct iphdr)
+ */
+#include <netinet/ip.h>
+
+typedef struct
+{
+    /**
+     * @brief The unique integer variables that make up an IP header (minimum 20 bytes):
+     * - uint8_t tos;        |   Type of Service - priority hints for routers (QoS). "Treat this VoIP packet with low latency."
+     * - uint16_t tot_len;   |   Total Length - entire packet size in bytes. Receiver knows where this packet ends.
+     * - uint16_t id;        |   Identification - unique ID so fragments can be reassembled. Same ID = same original packet.
+     * - uint16_t frag_off;  |   Fragment Offset - where this fragment belongs in the original packet (in 8-byte units).
+     * - uint8_t ttl;        |   Time To Live - max hops before packet dies. Prevents infinite routing loops.
+     * - uint8_t protocol;   |   Protocol - what's inside the payload (6=TCP, 17=UDP, 1=ICMP). NOT HTTP/SSH!!!!, those are Layer 7 in the OSI model.
+     * - uint16_t check;     |   Header Checksum - integrity check for the header. Detects corruption in transit.
+     * - uint32_t saddr;     |   Source Address - 32-bit IPv4 address of sender.
+     * - uint32_t daddr;     |   Destination Address - 32-bit IPv4 address of recipient.
+     */
+    struct iphdr *iph;
+    char src_ip[16];
+    char dst_ip[16];
+} parse_ip;
+
+parse_ip *parse_ip_create();
+
+void parse_source_ip(parse_ip *self);
+
+#endif

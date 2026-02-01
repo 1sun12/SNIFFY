@@ -6,6 +6,7 @@ HEADERS
 #include "debug.h"
 #include "nou_socket.h"
 #include "parse_ether.h"
+#include "parse_ip.h"
 
 /*
 ==================================================
@@ -35,6 +36,9 @@ int main(int argc, char **argv) {
 
     // ~ Testing: convert ethernet header to something humanly readable
     parse(peth);
+
+    // ~ Testing: create ip parser
+    parse_ip *pip = parse_ip_create();
 
     printf("\nSource MAC: %s\t", peth->src_mac);
     printf("\nDestination MAC: %s\t", peth->dst_mac);
