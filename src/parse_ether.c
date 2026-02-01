@@ -34,3 +34,31 @@ void set_buffer(parse_ether *self, void *buffer) {
 
     OUTPUT_D_MSG("set_buffer : Successfully casted buffer space to an ethernet header structure!");
 }
+
+void parse(parse_ether *self) {
+    OUTPUT_D_MSG("parse : Parsing Ethernet Header and extracting MAC addresses + next layer...");
+
+    // ~ Convert source MAC address to a string, from the ethernet header
+    sprintf(self->src_mac, "%02X:%02X:%02X:%02X:%02X:%02X",
+        self->eth->h_source[0],
+        self->eth->h_source[1],
+        self->eth->h_source[2],
+        self->eth->h_source[3],
+        self->eth->h_source[4],
+        self->eth->h_source[5]);
+
+    // ~ Convert destination MAC address to a string, from the ethernet header
+    sprintf(self->dst_mac, "%02X:%02X:%02X:%02X:%02X:%02X",
+        self->eth->h_dest[0],
+        self->eth->h_dest[1],
+        self->eth->h_dest[2],
+        self->eth->h_dest[3],
+        self->eth->h_dest[4],
+        self->eth->h_dest[5]);
+
+    uint16_t ethertype_net = ntohs(self->eth->h_proto);
+
+    sprintf(self->ethertype, "0x%04X", ethertype_net);
+
+    OUTPUT_D_MSG("parse : Successfully parsed the Ethernet Header!");
+}

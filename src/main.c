@@ -32,4 +32,11 @@ int main(int argc, char **argv) {
 
     // ~ Testing: cast buffer to ethernet header
     set_buffer(peth, sockpg->buffer);
+
+    // ~ Testing: convert ethernet header to something humanly readable
+    parse(peth);
+
+    printf("\nSource MAC: %s\t", peth->src_mac);
+    printf("\nDestination MAC: %s\t", peth->dst_mac);
+    printf("\nNext Layer: %s\t", peth->ethertype);
 }
