@@ -29,33 +29,32 @@ int main(int argc, char **argv) {
     // ~ Testing: recieve a frame
     s->recv(s);
 
-    // ~ Testing: create ethernet parser
+    // ~ Testing: Ethernet Header parsing
     eth_t *e = eth_create();
-
-    // ~ Testing: cast buffer to ethernet header
     e->set_buffer(e, s->buffer);
-
-    // ~ Testing: convert ethernet header to something humanly readable
     e->parse(e);
 
-    // ~ Testing: create ip parser
+    // ~ Testing: IP parsing
     ip_t *i = ip_create();
-
-    // ~ Testing: set buffer for ip parser
     i->set_buffer(i, s->buffer);
-
-    // ~ Testing: parse the source IP
     i->parse_src(i);
-
-    // ~ Testing: parse the destination IP
     i->parse_dst(i);
 
-    printf("\nSource MAC: %s", e->src_mac);
-    printf("\nDestination MAC: %s", e->dst_mac);
-    printf("\nNext Layer: %s", e->ethertype);
+    // ~ Testing: tcp parsing
+    tcp_t *t = tcp_create();
+    t->set_buffer(t, s->buffer, i->hdr->ihl * 4);
+    t->parse_src(t);
+    t->parse_dst(t);
 
-    printf("\nSource IP: %s", i->src_ip);
-    printf("\nDst IP: %s", i->dst_ip);
+    printf("\nSource MAC: \t%s", e->src_mac);
+    printf("\nDst MAC: \t%s", e->dst_mac);
+    printf("\nNext Layer: \t%s", e->ethertype);
+
+    printf("\nSource IP: \t%s", i->src_ip);
+    printf("\nDst IP: \t%s", i->dst_ip);
+
+    printf("\nSource Port: \t%s", t->src_port);
+    printf("\nDst Port: \t%s", t->dst_port);
 
     printf("\n");
 }
