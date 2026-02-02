@@ -1,9 +1,9 @@
 /**
- * @file nou_socket.h
+ * @file sock.h
  * @brief Abstracting network operations
  */
-#ifndef NOU_SOCKET_H
-#define NOU_SOCKET_H
+#ifndef SOCK_H
+#define SOCK_H
 
 /**
  * @brief User headers:
@@ -44,11 +44,18 @@
 /**
  * @brief Represents a socket & the address information used to template it + other goodies
  */
-typedef struct {
+typedef struct sock_t sock_t;
+struct sock_t {
     int sockfd;
     struct addrinfo hints;
     void *buffer;
-} nou_socket;
+
+    void (*fill_hints)(sock_t *self);
+    void (*open)(sock_t *self);
+    void (*close)(sock_t *self);
+    void (*recv)(sock_t *self);
+    void (*destroy)(sock_t **self_ptr);
+};
 
 /** 
  * ==========================================================================
@@ -61,13 +68,13 @@ typedef struct {
  * @brief Creates and initializes a nou socket (constructor)
  * @return Pointer to nou socket, or NULL on failure
  */
-nou_socket *nou_socket_create();
+sock_t *sock_create();
 
 /**
  * @brief Destroys and frees a nou socket (destructor)
  * @param self `This` object
  */
-void nou_socket_destroy(nou_socket **self); 
+void sock_destroy(sock_t **self_ptr); 
 
 /**
  * ==========================================================================
@@ -89,30 +96,23 @@ void nou_socket_destroy(nou_socket **self);
  * 
  * @param self `This` object
  */
-void fill_out_hints(nou_socket *self);
+void sock_fill_hints(sock_t *self);
 
 /**
  * @brief Opens the socket and assigns a file descriptor
  * @param self `This` object
  */
-void open_socket(nou_socket *self);
+void sock_open(sock_t *self);
 
 /**
  * @brief Closes the socket and removes file descriptor
  * @param self `This` object
  */
-void close_socket(nou_socket * self);
+void sock_close(sock_t *self);
 
 /**
  * @brief Recieves a message representing a raw ethernet header
  */
-void recv_socket(nou_socket * self);
-
-
-void bind_socket();
-void connect_socket();
-void send_socket();
-void recv_socket();
-void toString();
+void sock_recv(sock_t *self);
 
 #endif

@@ -4,9 +4,10 @@ HEADERS
 ==================================================
 */
 #include "debug.h"
-#include "nou_socket.h"
-#include "parse_ether.h"
-#include "parse_ip.h"
+#include "sock.h"
+#include "eth.h"
+#include "ip.h"
+#include "tcp.h"
 
 /*
 ==================================================
@@ -16,31 +17,45 @@ MAIN
 int main(int argc, char **argv) {
     OUTPUT_D_MSG("~ MAIN EXECUTION STARTING ~");
 
-    // ~ Testing: create a nou socket
-    nou_socket *sockpg = nou_socket_create();
+    // ~ Testing: create a socket
+    sock_t *s = sock_create();
 
     // ~ Testing: fill out hints
-    fill_out_hints(sockpg);
+    s->fill_hints(s);
 
     // ~ Testing: open socket
-    open_socket(sockpg);
+    s->open(s);
 
     // ~ Testing: recieve a frame
-    recv_socket(sockpg);
+    s->recv(s);
 
     // ~ Testing: create ethernet parser
-    parse_ether *peth = parse_ether_create();
+    eth_t *e = eth_create();
 
     // ~ Testing: cast buffer to ethernet header
-    set_buffer(peth, sockpg->buffer);
+    e->set_buffer(e, s->buffer);
 
     // ~ Testing: convert ethernet header to something humanly readable
-    parse(peth);
+    e->parse(e);
 
     // ~ Testing: create ip parser
-    parse_ip *pip = parse_ip_create();
+    ip_t *i = ip_create();
 
-    printf("\nSource MAC: %s\t", peth->src_mac);
-    printf("\nDestination MAC: %s\t", peth->dst_mac);
-    printf("\nNext Layer: %s\t", peth->ethertype);
+    // ~ Testing: set buffer for ip parser
+    i->set_buffer(i, s->buffer);
+
+    // ~ Testing: parse the source IP
+    i->parse_src(i);
+
+    // ~ Testing: parse the destination IP
+    i->parse_dst(i);
+
+    printf("\nSource MAC: %s", e->src_mac);
+    printf("\nDestination MAC: %s", e->dst_mac);
+    printf("\nNext Layer: %s", e->ethertype);
+
+    printf("\nSource IP: %s", i->src_ip);
+    printf("\nDst IP: %s", i->dst_ip);
+
+    printf("\n");
 }

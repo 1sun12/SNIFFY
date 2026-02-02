@@ -1,4 +1,4 @@
-#include "nou_socket.h"
+#include "sock.h"
 
 /*
  * ==========================================================================
@@ -6,18 +6,18 @@
  * ==========================================================================
  */
 
-nou_socket *nou_socket_create() {
-    OUTPUT_D_MSG("nou_socket_create : Initializing a nou socket...");
+sock_t *sock_create() {
+    OUTPUT_D_MSG("sock_create : Initializing a socket...");
 
-    // ~ Initialize a nou socket pointer
-    nou_socket *new = NULL;
+    // ~ Initialize a socket pointer
+    sock_t *new = NULL;
 
     // ~ Allocate however many bytes of memory it needs and zero the entire space
-    new = (nou_socket *)calloc(1, sizeof(nou_socket));
+    new = (sock_t *)calloc(1, sizeof(sock_t));
 
     // ~ Error check: did calloc fail?
     if (new == NULL) {
-        perror("\n[ERROR]:nou_socket_create");
+        perror("\n[ERROR]:sock_create");
         return NULL;
     }
 
@@ -28,22 +28,29 @@ nou_socket *nou_socket_create() {
 
     // ~ Allocate memory to the buffer and error check
     if ((new->buffer = malloc(MAX_FRAME_SIZE)) == NULL) {
-        perror("\n[ERROR]:nou_socket_create");
+        perror("\n[ERROR]:sock_create");
     }
 
+    // ~ Wire up function pointers
+    new->fill_hints = sock_fill_hints;
+    new->open = sock_open;
+    new->close = sock_close;
+    new->recv = sock_recv;
+    new->destroy = sock_destroy;
+
     // ~ Return the newly init struct
-    OUTPUT_D_MSG("nou_socket_create : Nou socket initialized successfully!");
+    OUTPUT_D_MSG("sock_create : Socket initialized successfully!");
     return new;
 }
 
-void nou_socket_destroy(nou_socket **self_ptr) {
-    nou_socket *self = *self_ptr;
+void sock_destroy(sock_t **self_ptr) {
+    sock_t *self = *self_ptr;
 
-    OUTPUT_D_MSG("nou_socket_destroy : Nou socket being destroyed...");
+    OUTPUT_D_MSG("sock_destroy : Socket being destroyed...");
     
     // ~ Close the linux file descriptor for the socket
     if (close(self->sockfd) < 0) {
-        perror("\n[ERROR]:nou_socket_destroy");
+        perror("\n[ERROR]:sock_destroy");
     }
 
     // ~ Deallocate the buffer
@@ -54,7 +61,7 @@ void nou_socket_destroy(nou_socket **self_ptr) {
     free(self);
     *self_ptr = NULL;
 
-    OUTPUT_D_MSG("nou_socket_destroy : Nou socket destroyed successfully!");
+    OUTPUT_D_MSG("sock_destroy : Socket destroyed successfully!");
 }
 
 /*
@@ -64,7 +71,7 @@ void nou_socket_destroy(nou_socket **self_ptr) {
  *
  */
 
-void fill_out_hints(nou_socket *self) {
+void sock_fill_hints(sock_t *self) {
     does_exist(self);
 
     // ~ Set address family to packets
@@ -76,43 +83,43 @@ void fill_out_hints(nou_socket *self) {
     // ~ Set protocol to capture every packet that hits our Network Interface Card
     self->hints.ai_protocol = htons(ETH_P_ALL);
 
-    OUTPUT_D_MSG("fill_out_hints : Hints have been templated...");
+    OUTPUT_D_MSG("sock_fill_hints : Hints have been templated...");
 }
 
-void open_socket(nou_socket *self) {
+void sock_open(sock_t *self) {
     does_exist(self);
-    OUTPUT_D_MSG("open_socket : Opening a new socket...");
+    OUTPUT_D_MSG("sock_open : Opening a new socket...");
 
     // ~ Creates a new socket given the templated information from our address information
     if ((self->sockfd = socket(self->hints.ai_family, self->hints.ai_socktype, self->hints.ai_protocol)) < 0) {
-        perror("\n[ERROR]:open_socket");
+        perror("\n[ERROR]:sock_open");
         return;
     }
 
-    OUTPUT_D_MSG("open_socket : Successfully opened a new socket!");
+    OUTPUT_D_MSG("sock_open : Successfully opened a new socket!");
 }
 
-void close_socket(nou_socket *self) {
+void sock_close(sock_t *self) {
     does_exist(self);
-    OUTPUT_D_MSG("close_socket : Closing an existing socket...");
+    OUTPUT_D_MSG("sock_close : Closing an existing socket...");
 
     if (close(self->sockfd) < 0) {
-        perror("\n[ERROR]:close_socket");
+        perror("\n[ERROR]:sock_close");
         return;
     }
 
-    OUTPUT_D_MSG("close_socket : Successfully closed an existing socket!");
+    OUTPUT_D_MSG("sock_close : Successfully closed an existing socket!");
 }
 
-void recv_socket(nou_socket *self) {
+void sock_recv(sock_t *self) {
     does_exist(self);
-    OUTPUT_D_MSG("recv_socket : Attempting to recieve message...");
+    OUTPUT_D_MSG("sock_recv : Attempting to recieve message...");
 
     // ~ Recieve a raw ethernet frame from your Network Interface Card
     if ((recv(self->sockfd, self->buffer, MAX_FRAME_SIZE, 0)) < 0) {
-        perror("\n[ERROR]:recv_socket");
+        perror("\n[ERROR]:sock_recv");
         return;
     }
 
-    OUTPUT_D_MSG("recv_socket : Successfully recieved an ethernet frame!");
+    OUTPUT_D_MSG("sock_recv : Successfully recieved an ethernet frame!");
 }

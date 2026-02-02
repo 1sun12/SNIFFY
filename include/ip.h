@@ -1,5 +1,5 @@
-#ifndef PARSE_IP_H
-#define PARSE_IP_H
+#ifndef IP_H
+#define IP_H
 
 /**
  * @brief User headers
@@ -18,8 +18,8 @@
  */
 #include <netinet/ip.h>
 
-typedef struct
-{
+typedef struct ip_t ip_t;
+struct ip_t {
     /**
      * @brief The unique integer variables that make up an IP header (minimum 20 bytes):
      * - uint8_t tos;        |   Type of Service - priority hints for routers (QoS). "Treat this VoIP packet with low latency."
@@ -32,13 +32,24 @@ typedef struct
      * - uint32_t saddr;     |   Source Address - 32-bit IPv4 address of sender.
      * - uint32_t daddr;     |   Destination Address - 32-bit IPv4 address of recipient.
      */
-    struct iphdr *iph;
+    struct iphdr *hdr;
     char src_ip[16];
     char dst_ip[16];
-} parse_ip;
 
-parse_ip *parse_ip_create();
+    void (*set_buffer)(ip_t *self, void *buffer);
+    void (*parse_src)(ip_t *self);
+    void (*parse_dst)(ip_t *self);
+    void (*destroy)(ip_t **self_ptr);
+};
 
-void parse_source_ip(parse_ip *self);
+ip_t *ip_create();
+
+void ip_destroy(ip_t **self_ptr);
+
+void ip_set_buffer(ip_t *self, void *buffer);
+
+void ip_parse_src(ip_t *self);
+
+void ip_parse_dst(ip_t *self);
 
 #endif
