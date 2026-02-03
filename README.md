@@ -39,6 +39,7 @@ If I ever come back to this project to flesh it out some more, here are some ide
 - Exports everything in `.pcap` format, make it cross compatible with `WireShark` and `tcpdump`
 
 ## Resources
-[Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
-[Effective C](https://www.amazon.com/Effective-Introduction-Professional-Robert-Seacord/dp/1718501048)
-[Pack. Sniff. in C from Scratch Youtube Tutorial](https://www.youtube.com/watch?v=1Quv19IVFsc&t=566s)
+
+- [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
+- [Effective C](https://www.amazon.com/Effective-Introduction-Professional-Robert-Seacord/dp/1718501048)
+- [Pack. Sniff. in C from Scratch Youtube Tutorial](https://www.youtube.com/watch?v=1Quv19IVFsc&t=566s)
