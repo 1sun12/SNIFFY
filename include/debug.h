@@ -15,7 +15,7 @@
 /**
  * @brief If 1, output additional debug messages (change to 0, remove extra messages)
  */
-#define OUTPUT_DEBUG 1
+#define OUTPUT_DEBUG 0
 
 /**
  * @brief Output a basic informational debug message

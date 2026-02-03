@@ -9,6 +9,7 @@ HEADERS
 #include "ip.h"
 #include "tcp.h"
 #include "payl.h"
+#include "cli.h"
 
 /*
 ==================================================
@@ -19,6 +20,10 @@ int main(int argc, char **argv) {
     OUTPUT_D_MSG("~ MAIN EXECUTION STARTING ~");
 
     ssize_t brvd = 0;
+    char input[16];
+
+    // ~ Testing: create a CLI
+    cli_t *c = cli_create();
 
     // ~ Testing: create a socket
     sock_t *s = sock_create();
@@ -29,49 +34,84 @@ int main(int argc, char **argv) {
     // ~ Testing: open socket
     s->open(s);
 
-    // ~ Testing: recieve a frame
-    brvd = s->recv(s);
+    while (c->exit_program == 0) {
+        c->display_menu(c);
 
-    // ~ If recieve came back with -1, it failed and a force exit must be made :'[
-    if (brvd < 0) {
-        exit_with_error("\n[ERROR]:main");
+        if (fgets(input, sizeof(input), stdin) == NULL) {
+            continue;
+        }
+
+        if (input[0] == 's' || input[0] == 'S') {
+            c->running = 1;
+            printf("\nCapturing... (type 's' + Enter to stop)\n");
+
+            while (c->running == 1) {
+                int status = c->check_for_input(c, s->sockfd);
+
+                if (status == 0) {
+                    break;
+                }
+
+                if (status == 1) {
+                    // ~ Testing: recieve a frame
+                    brvd = s->recv(s);
+
+                    // ~ If recieve came back with -1, it failed and a force exit must be made :'[
+                    if (brvd < 0) {
+                        exit_with_error("\n[ERROR]:main");
+                    }
+
+                    // ~ Testing: Ethernet Header parsing
+                    eth_t *e = eth_create();
+                    e->set_buffer(e, s->buffer);
+                    e->parse(e);
+
+                    // ~ Testing: IP parsing
+                    ip_t *i = ip_create();
+                    i->set_buffer(i, s->buffer);
+                    i->parse_src(i);
+                    i->parse_dst(i);
+
+                    // ~ Testing: tcp parsing
+                    tcp_t *t = tcp_create();
+                    t->set_buffer(t, s->buffer, i->hdr->ihl * 4);
+                    t->parse_src(t);
+                    t->parse_dst(t);
+    
+                    // ~ Testing: payload parsing into hex-dump
+                    size_t headers_len = 0;
+                    headers_len = 14 + (i->hdr->ihl * 4) + (t->hdr->doff * 4); // ~ Calculate the length in bytes (Eth Hdr) + (IP Hdr) + (TCP Hdr)
+                    payl_t *p = payl_create();
+                    p->set_buffer(p, s->buffer, brvd, headers_len);
+
+                    printf("\nSource MAC: \t%s", e->src_mac);
+                    printf("\nDst MAC: \t%s", e->dst_mac);
+                    printf("\nNext Layer: \t%s", e->ethertype);
+
+                    printf("\nSource IP: \t%s", i->src_ip);
+                    printf("\nDst IP: \t%s", i->dst_ip);
+
+                    printf("\nSource Port: \t%s", t->src_port);
+                    printf("\nDst Port: \t%s", t->dst_port);
+
+                    printf("\n~~ Test Dump ~~\n");
+                    p->parse(p);
+
+                    printf("\n");
+
+                    e->destroy(&e);
+                    i->destroy(&i);
+                    t->destroy(&t);
+                }
+            }
+        } else if (input[0] == 'e' || input[0] == 'E') {
+            c->exit_program = 1;
+        }
     }
 
-    // ~ Testing: Ethernet Header parsing
-    eth_t *e = eth_create();
-    e->set_buffer(e, s->buffer);
-    e->parse(e);
+    s->destroy(&s);
+    c->destroy(&c);
 
-    // ~ Testing: IP parsing
-    ip_t *i = ip_create();
-    i->set_buffer(i, s->buffer);
-    i->parse_src(i);
-    i->parse_dst(i);
-
-    // ~ Testing: tcp parsing
-    tcp_t *t = tcp_create();
-    t->set_buffer(t, s->buffer, i->hdr->ihl * 4);
-    t->parse_src(t);
-    t->parse_dst(t);
-    
-    // ~ Testing: payload parsing into hex-dump
-    size_t headers_len = 0;
-    headers_len = 14 + (i->hdr->ihl * 4) + (t->hdr->doff * 4); // ~ Calculate the length in bytes (Eth Hdr) + (IP Hdr) + (TCP Hdr)
-    payl_t *p = payl_create();
-    p->set_buffer(p, s->buffer, brvd, headers_len);
-
-    printf("\nSource MAC: \t%s", e->src_mac);
-    printf("\nDst MAC: \t%s", e->dst_mac);
-    printf("\nNext Layer: \t%s", e->ethertype);
-
-    printf("\nSource IP: \t%s", i->src_ip);
-    printf("\nDst IP: \t%s", i->dst_ip);
-
-    printf("\nSource Port: \t%s", t->src_port);
-    printf("\nDst Port: \t%s", t->dst_port);
-
-    printf("\n~~ Test Dump ~~\n");
-    p->parse(p);
-
-    printf("\n");
+    printf("\nGoodbye!\n");
+    return 0;
 }
