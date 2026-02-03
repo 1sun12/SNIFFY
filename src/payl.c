@@ -29,6 +29,9 @@ payl_t *payl_create() {
 }
 
 void payl_set_buffer(payl_t *self, void *buff, size_t total_len, size_t headers_len){
+    does_exist(self);
+    OUTPUT_D_MSG("payl_set_buffer : Attempting to set buffer info for the payload parser...");
+
     // ~ Point buffer to the location of the recieved packet
     self->buffer = buff;
 
@@ -37,11 +40,21 @@ void payl_set_buffer(payl_t *self, void *buff, size_t total_len, size_t headers_
 
     // ~ Set our -1/+1 byte shifter at the beginning of the payload, were ready to go!
     self->shift = ((uint8_t *)self->buffer) + headers_len;
+
+    OUTPUT_D_MSG("payl_set_buffer : Successfully set the buffer info for the payload parser!");
 }
 
 void payl_parse(payl_t *self) {
+    does_exist(self);
     OUTPUT_D_MSG("payl_parse : Attempting to hex-dump the payload...");
 
     // ~ Construct a (16)-hex-character line
-    sprintf(self->hex_line, "%02X", self->shift[0]);
+    char *write_at_addr_in_hex_line = self->hex_line;
+    for (int i = 0; i < 16; i++) {
+        sprintf(write_at_addr_in_hex_line, "%02X ", self->shift[i]);
+        write_at_addr_in_hex_line += 3;
+    }
+
+
+    OUTPUT_D_MSG("payl_parse : Successfully hex-dumped the entire payload!");
 }
