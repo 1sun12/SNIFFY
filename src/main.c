@@ -104,6 +104,9 @@ int main(int argc, char **argv) {
                     t->destroy(&t);
                 }
             }
+        } else if (input[0] == 'o' || input[0] == 'O') {
+            c->display_options(c);
+            c->handle_options(c);
         } else if (input[0] == 'e' || input[0] == 'E') {
             c->exit_program = 1;
         }

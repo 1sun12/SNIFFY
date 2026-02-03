@@ -14,7 +14,13 @@ cli_t *cli_create() {
     new->running = 0;
     new->exit_program = 0;
 
+    new->opt_tcp = 1;
+    new->opt_udp = 0;
+    new->opt_arp = 0;
+
     new->display_menu = cli_display_menu;
+    new->display_options = cli_display_options;
+    new->handle_options = cli_handle_options;
     new->check_for_input = cli_check_for_input;
     new->destroy = cli_destroy;
 
@@ -38,9 +44,56 @@ void cli_display_menu(cli_t *self) {
 
     printf("\n=== Packet Sniffer ===\n");
     printf("[s] Start capture\n");
+    printf("[o] Options\n");
     printf("[e] Exit\n");
     printf("\n> ");
     fflush(stdout);
+}
+
+void cli_display_options(cli_t *self) {
+    does_exist(self);
+
+    printf("\n=== Options ===\n");
+    printf("[0] TCP: %s\n", self->opt_tcp ? "true" : "false");
+    printf("[1] UDP: %s\n", self->opt_udp ? "true" : "false");
+    printf("[2] ARP: %s\n", self->opt_arp ? "true" : "false");
+    printf("\nType number + 't' or 'f' (e.g., \"1t\" to enable UDP)\n");
+    printf("Type 'b' to go back\n");
+    printf("\nWARNING: Only TCP is currently supported. Changing settings may cause errors.\n");
+    printf("\n> ");
+    fflush(stdout);
+}
+
+void cli_handle_options(cli_t *self) {
+    does_exist(self);
+
+    char input[16];
+    int in_options = 1;
+
+    while (in_options == 1) {
+        if (fgets(input, sizeof(input), stdin) == NULL) {
+            continue;
+        }
+
+        if (input[0] == 'b' || input[0] == 'B') {
+            in_options = 0;
+            break;
+        }
+
+        if (input[1] == 't' || input[1] == 'T' || input[1] == 'f' || input[1] == 'F') {
+            int value = (input[1] == 't' || input[1] == 'T') ? 1 : 0;
+
+            if (input[0] == '0') {
+                self->opt_tcp = value;
+            } else if (input[0] == '1') {
+                self->opt_udp = value;
+            } else if (input[0] == '2') {
+                self->opt_arp = value;
+            }
+        }
+
+        self->display_options(self);
+    }
 }
 
 int cli_check_for_input(cli_t *self, int sockfd) {
