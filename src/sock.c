@@ -111,15 +111,22 @@ void sock_close(sock_t *self) {
     OUTPUT_D_MSG("sock_close : Successfully closed an existing socket!");
 }
 
-void sock_recv(sock_t *self) {
+ssize_t sock_recv(sock_t *self) {
     does_exist(self);
     OUTPUT_D_MSG("sock_recv : Attempting to recieve message...");
 
+    // ~ Total number of bytes recieved from the socket's packet capture
+    // ~ ssize_t is similar to size_t but instead of its range being ~(+18) quintillion, its ~(-9) - ~(+9) quintillion, this being a (64)bit system
+    // ~ recv() has a chance of returning -1, which will cause big issues with an unsigned max-size integer!
+    // ~ You can still account for really large numbers and a possible -1 by using double(s)ize_t
+    ssize_t brvd = 0;
+
     // ~ Recieve a raw ethernet frame from your Network Interface Card
-    if ((recv(self->sockfd, self->buffer, MAX_FRAME_SIZE, 0)) < 0) {
+    if ((brvd = (recv(self->sockfd, self->buffer, MAX_FRAME_SIZE, 0))) < 0) {
         perror("\n[ERROR]:sock_recv");
         return;
     }
 
     OUTPUT_D_MSG("sock_recv : Successfully recieved an ethernet frame!");
+    return brvd;
 }

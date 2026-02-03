@@ -53,7 +53,7 @@ struct sock_t {
     void (*fill_hints)(sock_t *self);
     void (*open)(sock_t *self);
     void (*close)(sock_t *self);
-    void (*recv)(sock_t *self);
+    ssize_t (*recv)(sock_t *self);
     void (*destroy)(sock_t **self_ptr);
 };
 
@@ -113,6 +113,6 @@ void sock_close(sock_t *self);
 /**
  * @brief Recieves a message representing a raw ethernet header
  */
-void sock_recv(sock_t *self);
+ssize_t sock_recv(sock_t *self);
 
 #endif
