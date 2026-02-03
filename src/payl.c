@@ -1,7 +1,9 @@
 
 
+
 #include "debug.h"
 #include "payl.h"
+#include "output.h"
 
 payl_t *payl_create() {
     OUTPUT_D_MSG("payl_create : Attempting to create a payload parser...");
@@ -36,7 +38,8 @@ void payl_set_buffer(payl_t *self, void *buff, size_t total_len, size_t headers_
     self->buffer = buff;
 
     // ~ Calculate size of the payload portion of the packet (so we know when to stop and not overflow)
-    self->payl_len = total_len - (headers_len);
+    self->payl_len = total_len;
+    // ~ PAYLOAD ONLY + NO HEADERS: self->payl_len = total_len - (headers_len);
 
     // ~ Set our -1/+1 byte shifter at the beginning of the payload, were ready to go!
     self->shift = ((uint8_t *)self->buffer) + headers_len;
@@ -44,7 +47,7 @@ void payl_set_buffer(payl_t *self, void *buff, size_t total_len, size_t headers_
     OUTPUT_D_MSG("payl_set_buffer : Successfully set the buffer info for the payload parser!");
 }
 
-void payl_parse(payl_t *self) {
+void payl_parse(payl_t *self, output_t *out) {
     does_exist(self);
     OUTPUT_D_MSG("payl_parse : Attempting to hex-dump the payload...");
 
@@ -72,7 +75,7 @@ void payl_parse(payl_t *self) {
         }
 
         // ~ Print the hex parsed payload :]
-        printf("\n%s", self->hex_line);
+        out->writef(out, "\n%s", self->hex_line);
     }
 
     OUTPUT_D_MSG("payl_parse : Successfully hex-dumped the entire payload!");

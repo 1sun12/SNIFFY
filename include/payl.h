@@ -7,6 +7,8 @@
 
 #define HEX_LINE_SIZE 48   // ~ One line of hex is equivalent to 0x10, then 0x20... and so on
 
+typedef struct output_t output_t;
+
 typedef struct payl_t payl_t;
 struct payl_t {
     uint8_t *shift;  // ~ Payload shifter (move -1 or +1 bytes across the payload)
@@ -15,7 +17,7 @@ struct payl_t {
     char hex_line[HEX_LINE_SIZE];
 
     // ~ Function pointers (I LOVE ABSTRACTION!!!! :DDDD)
-    void (*parse)(payl_t *self);
+    void (*parse)(payl_t *self, output_t *out);
     void (*set_buffer)(payl_t *self, void *buff, size_t total_len, size_t headers_len);
 };
 
@@ -25,7 +27,7 @@ payl_t *payl_create();
 
 void payl_set_buffer(payl_t *self, void *buff, size_t total_len, size_t headers_len);
 
-void payl_parse(payl_t *self);
+void payl_parse(payl_t *self, output_t *out);
 
 
 #endif

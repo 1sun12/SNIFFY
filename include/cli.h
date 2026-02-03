@@ -15,6 +15,8 @@ struct cli_t {
     int opt_tcp;
     int opt_udp;
     int opt_arp;
+    int opt_output_file;
+    int opt_output_terminal;
 
     void (*display_menu)(cli_t *self);
     void (*display_options)(cli_t *self);

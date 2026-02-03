@@ -10,6 +10,7 @@ HEADERS
 #include "tcp.h"
 #include "payl.h"
 #include "cli.h"
+#include "output.h"
 
 /*
 ==================================================
@@ -24,6 +25,9 @@ int main(int argc, char **argv) {
 
     // ~ Testing: create a CLI
     cli_t *c = cli_create();
+
+    // ~ Testing: create an output handler
+    output_t *o = output_create();
 
     // ~ Testing: create a socket
     sock_t *s = sock_create();
@@ -44,6 +48,13 @@ int main(int argc, char **argv) {
         if (input[0] == 's' || input[0] == 'S') {
             c->running = 1;
             printf("\nCapturing... (type 's' + Enter to stop)\n");
+
+            o->to_file = c->opt_output_file;
+            o->to_terminal = c->opt_output_terminal;
+
+            if (o->to_file == 1) {
+                o->open_file(o);
+            }
 
             while (c->running == 1) {
                 int status = c->check_for_input(c, s->sockfd);
@@ -66,11 +77,24 @@ int main(int argc, char **argv) {
                     e->set_buffer(e, s->buffer);
                     e->parse(e);
 
+                    // ~ Skip non-IPv4 packets (ethertype must be 0x0800)
+                    if (ntohs(e->hdr->h_proto) != 0x0800) {
+                        e->destroy(&e);
+                        continue;
+                    }
+
                     // ~ Testing: IP parsing
                     ip_t *i = ip_create();
                     i->set_buffer(i, s->buffer);
                     i->parse_src(i);
                     i->parse_dst(i);
+
+                    // ~ Skip non-TCP packets (protocol must be 6)
+                    if (i->hdr->protocol != 6) {
+                        e->destroy(&e);
+                        i->destroy(&i);
+                        continue;
+                    }
 
                     // ~ Testing: tcp parsing
                     tcp_t *t = tcp_create();
@@ -84,25 +108,29 @@ int main(int argc, char **argv) {
                     payl_t *p = payl_create();
                     p->set_buffer(p, s->buffer, brvd, headers_len);
 
-                    printf("\nSource MAC: \t%s", e->src_mac);
-                    printf("\nDst MAC: \t%s", e->dst_mac);
-                    printf("\nNext Layer: \t%s", e->ethertype);
+                    o->writef(o, "\nSource MAC: \t%s", e->src_mac);
+                    o->writef(o, "\nDst MAC: \t%s", e->dst_mac);
+                    o->writef(o, "\nNext Layer: \t%s", e->ethertype);
 
-                    printf("\nSource IP: \t%s", i->src_ip);
-                    printf("\nDst IP: \t%s", i->dst_ip);
+                    o->writef(o, "\nSource IP: \t%s", i->src_ip);
+                    o->writef(o, "\nDst IP: \t%s", i->dst_ip);
 
-                    printf("\nSource Port: \t%s", t->src_port);
-                    printf("\nDst Port: \t%s", t->dst_port);
+                    o->writef(o, "\nSource Port: \t%s", t->src_port);
+                    o->writef(o, "\nDst Port: \t%s", t->dst_port);
 
-                    printf("\n~~ Test Dump ~~\n");
-                    p->parse(p);
+                    o->writef(o, "\n~~ Test Dump ~~\n");
+                    p->parse(p, o);
 
-                    printf("\n");
+                    o->writef(o, "\n");
 
                     e->destroy(&e);
                     i->destroy(&i);
                     t->destroy(&t);
                 }
+            }
+
+            if (o->to_file == 1) {
+                o->close_file(o);
             }
         } else if (input[0] == 'o' || input[0] == 'O') {
             c->display_options(c);
@@ -114,6 +142,7 @@ int main(int argc, char **argv) {
 
     s->destroy(&s);
     c->destroy(&c);
+    o->destroy(&o);
 
     printf("\nGoodbye!\n");
     return 0;

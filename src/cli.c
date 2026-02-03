@@ -17,6 +17,8 @@ cli_t *cli_create() {
     new->opt_tcp = 1;
     new->opt_udp = 0;
     new->opt_arp = 0;
+    new->opt_output_file = 0;
+    new->opt_output_terminal = 1;
 
     new->display_menu = cli_display_menu;
     new->display_options = cli_display_options;
@@ -57,6 +59,8 @@ void cli_display_options(cli_t *self) {
     printf("[0] TCP: %s\n", self->opt_tcp ? "true" : "false");
     printf("[1] UDP: %s\n", self->opt_udp ? "true" : "false");
     printf("[2] ARP: %s\n", self->opt_arp ? "true" : "false");
+    printf("[3] Output to file: %s\n", self->opt_output_file ? "true" : "false");
+    printf("[4] Output to terminal: %s\n", self->opt_output_terminal ? "true" : "false");
     printf("\nType number + 't' or 'f' (e.g., \"1t\" to enable UDP)\n");
     printf("Type 'b' to go back\n");
     printf("\nWARNING: Only TCP is currently supported. Changing settings may cause errors.\n");
@@ -89,6 +93,10 @@ void cli_handle_options(cli_t *self) {
                 self->opt_udp = value;
             } else if (input[0] == '2') {
                 self->opt_arp = value;
+            } else if (input[0] == '3') {
+                self->opt_output_file = value;
+            } else if (input[0] == '4') {
+                self->opt_output_terminal = value;
             }
         }
 
