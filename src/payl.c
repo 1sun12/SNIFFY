@@ -48,13 +48,32 @@ void payl_parse(payl_t *self) {
     does_exist(self);
     OUTPUT_D_MSG("payl_parse : Attempting to hex-dump the payload...");
 
-    // ~ Construct a (16)-hex-character line
-    char *write_at_addr_in_hex_line = self->hex_line;
-    for (int i = 0; i < 16; i++) {
-        sprintf(write_at_addr_in_hex_line, "%02X ", self->shift[i]);
-        write_at_addr_in_hex_line += 3;
-    }
+    // ~ The amount of bytes processed
+    size_t bytes_proc = 0;
 
+    while (bytes_proc < self->payl_len){      
+        // ~ Write at each byte in our string-hex-buffer (taking advantage of pointer arithmetic magic)
+        char *write_at_addr_in_hex_line = self->hex_line;
+
+        // ~ Construct a (16)-hex-character string
+        if (self->payl_len - bytes_proc >= 16) {
+            for (int i = 0; i < 16; i++) {
+                sprintf(write_at_addr_in_hex_line, "%02X ", self->shift[i + bytes_proc]);
+                write_at_addr_in_hex_line += 3;
+                bytes_proc += 1;
+            }
+        } else { // ~ There are not enough bytes left to make a (16)-hex-character string
+            size_t bytes_remain = self->payl_len - bytes_proc;
+            for (int i = 0; i < bytes_remain; i++) {
+                sprintf(write_at_addr_in_hex_line, "%02X ", self->shift[i + bytes_proc]);
+                write_at_addr_in_hex_line += 3;
+                bytes_proc += 1;
+            }
+        }
+
+        // ~ Print the hex parsed payload :]
+        printf("\n%s", self->hex_line);
+    }
 
     OUTPUT_D_MSG("payl_parse : Successfully hex-dumped the entire payload!");
 }

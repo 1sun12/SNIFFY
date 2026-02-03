@@ -59,7 +59,6 @@ int main(int argc, char **argv) {
     headers_len = 14 + (i->hdr->ihl * 4) + (t->hdr->doff * 4); // ~ Calculate the length in bytes (Eth Hdr) + (IP Hdr) + (TCP Hdr)
     payl_t *p = payl_create();
     p->set_buffer(p, s->buffer, brvd, headers_len);
-    p->parse(p);
 
     printf("\nSource MAC: \t%s", e->src_mac);
     printf("\nDst MAC: \t%s", e->dst_mac);
@@ -71,7 +70,8 @@ int main(int argc, char **argv) {
     printf("\nSource Port: \t%s", t->src_port);
     printf("\nDst Port: \t%s", t->dst_port);
 
-    printf("\nTest Dump: \t%s", p->hex_line);
+    printf("\n~~ Test Dump ~~\n");
+    p->parse(p);
 
     printf("\n");
 }
